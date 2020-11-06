@@ -3,10 +3,12 @@ import os.path as osp
 import platform
 import shutil
 import time
+import sys
 import warnings
-
+import json
+import glob
 import torch
-
+import sys
 import mmcv
 from .base_runner import BaseRunner
 from .builder import RUNNERS
@@ -69,7 +71,7 @@ class EpochBasedRunner(BaseRunner):
 
         self.call_hook('after_val_epoch')
 
-    def run(self, data_loaders, workflow, max_epochs=None, **kwargs):
+    def run(self, data_loaders, workflow ,max_epochs=None, **kwargs):
         """Start running.
 
         Args:
@@ -80,6 +82,9 @@ class EpochBasedRunner(BaseRunner):
                 running 2 epochs for training and 1 epoch for validation,
                 iteratively.
         """
+        #print('work_dir')
+        #print(self.work_dir)
+        #sys.exit()
         assert isinstance(data_loaders, list)
         assert mmcv.is_list_of(workflow, tuple)
         assert len(data_loaders) == len(workflow)
@@ -106,6 +111,19 @@ class EpochBasedRunner(BaseRunner):
         self.call_hook('before_run')
 
         while self.epoch < self._max_epochs:
+            jsonresults=sorted(glob.glob(work_dir+'/*.json'))[-1]
+            with open(jsonresults, 'r') as handle:
+                result_data = [json.loads(line) for line in handle]
+            val_data=[]
+            for i in range(len(result_data)):
+                if('bbox_mAP' in result_data[i].keys()) and i+1 < len(result_data):
+                    val_data.append(result_data[i+1])
+            if len(val_data)>2:
+                min_loss = min(val_data, key=lambda x:x['loss_rpn_bbox'])['loss_rpn_bbox']
+                min_loss_epoch=min(val_data, key=lambda x:x['loss_rpn_bbox'])['epoch']
+                if val_data[-1]['loss_rpn_bbox']>min_loss and val_data[-1]['epoch']-min_loss_epoch>2:
+                    sys.exit()
+            
             for i, flow in enumerate(workflow):
                 mode, epochs = flow
                 if isinstance(mode, str):  # self.train()
@@ -122,6 +140,9 @@ class EpochBasedRunner(BaseRunner):
                 for _ in range(epochs):
                     if mode == 'train' and self.epoch >= self._max_epochs:
                         break
+                    with open('metric_res.json','w') as f:
+                        json.dump({'epoch':self.epoch},f,indent=4,ensure_ascii = False)
+
                     epoch_runner(data_loaders[i], **kwargs)
 
         time.sleep(1)  # wait for some hooks like loggers to finish
