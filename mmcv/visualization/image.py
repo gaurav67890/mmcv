@@ -126,6 +126,7 @@ def imshow_det_bboxes(img,
         inds = scores > score_thr
         bboxes = bboxes[inds, :]
         labels = labels[inds]
+        scores_final=scores[inds]
 
     bbox_color = color_val(bbox_color)
     text_color = color_val(text_color)
@@ -149,4 +150,4 @@ def imshow_det_bboxes(img,
         imshow(img, win_name, wait_time)
     if out_file is not None:
         imwrite(img, out_file)
-    return img,bbox_res,labels,scores
+    return img,bbox_res,labels,scores_final
