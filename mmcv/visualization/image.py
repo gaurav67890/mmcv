@@ -130,10 +130,12 @@ def imshow_det_bboxes(img,
     bbox_color = color_val(bbox_color)
     text_color = color_val(text_color)
     img = np.ascontiguousarray(img)
+    bbox_res=[]
     for bbox, label in zip(bboxes, labels):
         bbox_int = bbox.astype(np.int32)
         left_top = (bbox_int[0], bbox_int[1])
         right_bottom = (bbox_int[2], bbox_int[3])
+        bbox_res.append([left_top,right_bottom])
         cv2.rectangle(
             img, left_top, right_bottom, bbox_color, thickness=thickness)
         label_text = class_names[
@@ -147,4 +149,4 @@ def imshow_det_bboxes(img,
         imshow(img, win_name, wait_time)
     if out_file is not None:
         imwrite(img, out_file)
-    return img
+    return img,bbox_res,labels

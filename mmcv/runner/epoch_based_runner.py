@@ -115,14 +115,19 @@ class EpochBasedRunner(BaseRunner):
             with open(jsonresults, 'r') as handle:
                 result_data = [json.loads(line) for line in handle]
             val_data=[]
+            map_data=[]
             for i in range(len(result_data)):
                 if('bbox_mAP' in result_data[i].keys()) and i+1 < len(result_data):
                     val_data.append(result_data[i+1])
+                    map_data.append(result_data[i])
+            with open('map_data.json','w') as f:
+                json.dump({'map':map_data},f,indent=4,ensure_ascii = False)
+
             if len(val_data)>2:
                 min_loss = min(val_data, key=lambda x:x['loss_rpn_bbox'])['loss_rpn_bbox']
                 min_loss_epoch=min(val_data, key=lambda x:x['loss_rpn_bbox'])['epoch']
                 if val_data[-1]['loss_rpn_bbox']>min_loss and val_data[-1]['epoch']-min_loss_epoch>2:
-                    sys.exit()
+                    break
             
             for i, flow in enumerate(workflow):
                 mode, epochs = flow
