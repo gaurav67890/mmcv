@@ -149,4 +149,4 @@ def imshow_det_bboxes(img,
         imshow(img, win_name, wait_time)
     if out_file is not None:
         imwrite(img, out_file)
-    return img,bbox_res,labels
+    return img,bbox_res,labels,scores
