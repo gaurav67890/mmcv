@@ -125,8 +125,11 @@ def imshow_det_bboxes(img,
         assert bboxes.shape[1] == 5
         scores = bboxes[:, -1]
         inds = scores > score_thr
+        print('*'*200)
+        print(bboxes)
+        print(segms)
         bboxes = bboxes[inds, :]
-        segms=segms[inds, :]
+        segms = np.array(segms)[inds, :]
         labels = labels[inds]
         scores_final=scores[inds]
 
@@ -152,4 +155,4 @@ def imshow_det_bboxes(img,
         imshow(img, win_name, wait_time)
     if out_file is not None:
         imwrite(img, out_file)
-    return img,bbox_res,labels,scores_final
+    return img,bbox_res,segms,labels,scores_final
