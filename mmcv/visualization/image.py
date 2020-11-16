@@ -82,6 +82,7 @@ def imshow_bboxes(img,
 
 def imshow_det_bboxes(img,
                       bboxes,
+                      segms,
                       labels,
                       class_names=None,
                       score_thr=0,
@@ -125,6 +126,7 @@ def imshow_det_bboxes(img,
         scores = bboxes[:, -1]
         inds = scores > score_thr
         bboxes = bboxes[inds, :]
+        segms=segms[inds, :]
         labels = labels[inds]
         scores_final=scores[inds]
 
