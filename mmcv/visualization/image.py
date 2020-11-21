@@ -125,9 +125,9 @@ def imshow_det_bboxes(img,
         assert bboxes.shape[1] == 5
         scores = bboxes[:, -1]
         inds = scores > score_thr
-        print('*'*200)
-        print(bboxes)
-        print(segms)
+        #print('*'*200)
+        #print(bboxes)
+        #print(segms)
         bboxes = bboxes[inds, :]
         segms = np.array(segms)[inds, :]
         labels = labels[inds]
