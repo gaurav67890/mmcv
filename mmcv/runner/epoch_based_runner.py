@@ -128,7 +128,7 @@ class EpochBasedRunner(BaseRunner):
                 min_loss_epoch=min(val_data, key=lambda x:x['loss_rpn_bbox'])['epoch']
                 if val_data[-1]['loss_rpn_bbox']>min_loss and val_data[-1]['epoch']-min_loss_epoch>5:
                     with open('final_epoch.json','w') as f:
-                        json.dump({'epoch':'epoch_'+str(min_loss_epoch)+'.pth'},f,indent=4,ensure_ascii = False)
+                        json.dump({'epoch':str(min_loss_epoch)},f,indent=4,ensure_ascii = False)
                     break
             
             for i, flow in enumerate(workflow):
