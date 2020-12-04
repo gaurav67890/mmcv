@@ -111,6 +111,7 @@ class EpochBasedRunner(BaseRunner):
         self.call_hook('before_run')
 
         while self.epoch < self._max_epochs:
+            print(work_dir)
             jsonresults=sorted(glob.glob(work_dir+'/*.json'))[-1]
             with open(jsonresults, 'r') as handle:
                 result_data = [json.loads(line) for line in handle]
